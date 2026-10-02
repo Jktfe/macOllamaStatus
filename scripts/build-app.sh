@@ -18,7 +18,7 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 <dict>
   <key>CFBundleName</key><string>olusage</string>
   <key>CFBundleDisplayName</key><string>Ollama Usage</string>
-  <key>CFBundleIdentifier</key><string>com.github.simple-mac-ollama-usage-widget</string>
+  <key>CFBundleIdentifier</key><string>com.jktfe.macollamastatus</string>
   <key>CFBundleExecutable</key><string>olusage</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>0.1.0</string>

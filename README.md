@@ -1,4 +1,4 @@
-# simple-mac-ollama-usage-widget
+# macOllamaStatus
 
 A tiny macOS menu bar widget that shows your **live** Ollama usage, read from
 [ollama.com/settings](https://ollama.com/settings).
@@ -17,8 +17,8 @@ Click it for each usage meter and when it resets.
 Requires macOS 14+ and the Swift toolchain (Xcode or Command Line Tools).
 
 ```sh
-git clone https://github.com/<your-user>/simple-mac-ollama-usage-widget.git
-cd simple-mac-ollama-usage-widget
+git clone https://github.com/Jktfe/macOllamaStatus.git
+cd macOllamaStatus
 scripts/build-app.sh
 open olusage.app
 ```

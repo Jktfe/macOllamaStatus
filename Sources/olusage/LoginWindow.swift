@@ -4,8 +4,9 @@ import WebKit
 /// A plain browser window for signing in to ollama.com. Credentials are entered on ollama.com's
 /// own page; we only ever see the resulting cookie, kept in WebKit's persistent store.
 @MainActor
-final class LoginWindowController: NSObject, WKNavigationDelegate, NSWindowDelegate {
+final class LoginWindowController: NSObject, WKNavigationDelegate, WKUIDelegate, NSWindowDelegate {
     private var window: NSWindow?
+    private var popups: [NSWindow] = []
     private var webView: WKWebView?
     private let onSignedIn: () -> Void
 
@@ -17,6 +18,7 @@ final class LoginWindowController: NSObject, WKNavigationDelegate, NSWindowDeleg
         config.websiteDataStore = .default()
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = self
+        web.uiDelegate = self
         let win = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 480, height: 640),
                            styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
         win.title = "Sign in to Ollama"
@@ -37,7 +39,29 @@ final class LoginWindowController: NSObject, WKNavigationDelegate, NSWindowDeleg
         }
     }
 
+    // Sign-in providers (e.g. for 2FA) open popups with window.open(); without this they are blocked.
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
+                 for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        let popup = WKWebView(frame: .zero, configuration: configuration)
+        popup.uiDelegate = self
+        let win = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 480, height: 640),
+                           styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        win.contentView = popup
+        win.isReleasedWhenClosed = false
+        win.center()
+        win.makeKeyAndOrderFront(nil)
+        popups.append(win)
+        return popup
+    }
+
+    func webViewDidClose(_ webView: WKWebView) {
+        popups.first { $0.contentView === webView }?.close()
+        popups.removeAll { $0.contentView === webView }
+    }
+
     func windowWillClose(_ notification: Notification) {
+        guard (notification.object as? NSWindow) === window else { return }
+        popups.forEach { $0.close() }; popups = []
         window = nil; webView = nil
     }
 
