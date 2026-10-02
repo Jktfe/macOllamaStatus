@@ -33,7 +33,10 @@ final class UsageStore {
         guard status != .loading else { return }
         status = .loading
         do {
-            usage = try await source.fetchUsage()
+            let fresh = try await source.fetchUsage()
+            let previous = usage.map { Dictionary($0.meters.map { ($0.label, $0.percent) }, uniquingKeysWith: max) }
+            UsageAlerts.newAlerts(previous: previous, current: fresh).forEach(Notifier.post)
+            usage = fresh
             lastUpdated = Date()
             status = .ok
         } catch ParseError.signedOut {
