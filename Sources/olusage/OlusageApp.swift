@@ -7,8 +7,6 @@ struct OlusageApp: App {
     @State private var store = UsageStore(source: KeyStore.load().map { APIKeySource(apiKey: $0) })
     @State private var login: LoginWindowController?
 
-    init() { Notifier.requestAuthorization() }
-
     var body: some Scene {
         MenuBarExtra {
             MenuContent(store: store, openLogin: openLogin, promptForKey: promptForKey)
