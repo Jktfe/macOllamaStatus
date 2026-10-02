@@ -4,7 +4,7 @@
 [Ollama Cloud](https://ollama.com) usage and warns you *before* you hit the limit.
 
 ```
-(gauge) 42%       (gauge) ⚠︎ 93%
+🦙 42%          🦙 ⚠︎ 93%
 ```
 
 <p align="center"><img src="docs/menu.png" alt="The macOllamaStatus menu showing session and weekly usage" width="320"></p>
@@ -35,10 +35,10 @@ blocks it, right-click the app and choose **Open**. Notifications and launch-at-
 
 ## Use
 
-**Sign in (default).** Click the gauge icon → **Sign in…** and sign in on ollama.com (2FA popups work). The
+**Sign in (default).** Click the llama in the menu bar → **Sign in…** and sign in on ollama.com (2FA popups work). The
 window closes itself when you reach your settings page. Shows percentages **and reset times**.
 
-**API key (optional).** Click the gauge icon → **Use API key…**, paste a key from
+**API key (optional).** Click the llama in the menu bar → **Use API key…**, paste a key from
 [ollama.com/settings/keys](https://ollama.com/settings/keys). Sturdier than reading the page, but
 the API gives percentages only, with no reset times. **Back to sign-in mode** removes the key.
 
