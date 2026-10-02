@@ -12,7 +12,10 @@ struct OlusageApp: App {
             MenuContent(store: store, openLogin: openLogin, promptForKey: promptForKey)
         } label: {
             let high = (store.usage?.headline?.percent ?? 0) >= 90
-            Text("🦙 \(high ? "⚠︎ " : "")\(store.menuBarTitle)")
+            HStack(spacing: 3) {
+                Image(systemName: "gauge.with.dots.needle.67percent")
+                Text("\(high ? "⚠︎ " : "")\(store.menuBarTitle)")
+            }
         }
         .menuBarExtraStyle(.menu)
     }
