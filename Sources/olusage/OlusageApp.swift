@@ -1,4 +1,5 @@
 import SwiftUI
+import ServiceManagement
 import OlusageCore
 
 @main
@@ -51,6 +52,10 @@ struct MenuContent: View {
         Picker("Refresh every", selection: Bindable(store).intervalMinutes) {
             ForEach([1, 5, 15], id: \.self) { Text("\($0) min").tag($0) }
         }
+        Toggle("Launch at login", isOn: Binding(
+            get: { SMAppService.mainApp.status == .enabled },
+            set: { on in try? (on ? SMAppService.mainApp.register() : SMAppService.mainApp.unregister()) }
+        ))
         if store.status != .signedOut {
             Button("Sign out") { Task { await store.signOut() } }
         }

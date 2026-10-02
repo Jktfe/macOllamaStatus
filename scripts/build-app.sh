@@ -11,6 +11,17 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS"
 cp "$BIN" "$APP/Contents/MacOS/olusage"
 
+# App icon: render a 1024px PNG, then build an .icns from it.
+mkdir -p "$APP/Contents/Resources"
+ICONSET="$(mktemp -d)/AppIcon.iconset"; mkdir -p "$ICONSET"
+swift scripts/make-icon.swift "$ICONSET/base.png"
+for s in 16 32 128 256 512; do
+  sips -z $s $s "$ICONSET/base.png" --out "$ICONSET/icon_${s}x${s}.png" >/dev/null
+  sips -z $((s*2)) $((s*2)) "$ICONSET/base.png" --out "$ICONSET/icon_${s}x${s}@2x.png" >/dev/null
+done
+rm "$ICONSET/base.png"
+iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
+
 cat > "$APP/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -19,6 +30,7 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
   <key>CFBundleName</key><string>olusage</string>
   <key>CFBundleDisplayName</key><string>Ollama Usage</string>
   <key>CFBundleIdentifier</key><string>com.jktfe.macollamastatus</string>
+  <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundleExecutable</key><string>olusage</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>0.1.0</string>
