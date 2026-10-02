@@ -11,7 +11,10 @@ jobs:
       - uses: actions/checkout@v4
       - run: swift test
       - run: scripts/build-app.sh
-      - run: ditto -c -k --keepParent olusage.app olusage-${{ github.ref_name }}.zip
+      - name: Zip app
+        env:
+          TAG: ${{ github.ref_name }}
+        run: ditto -c -k --keepParent olusage.app "olusage-${TAG}.zip"
       - uses: softprops/action-gh-release@v2
         with:
           files: olusage-${{ github.ref_name }}.zip
