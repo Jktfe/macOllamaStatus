@@ -64,9 +64,9 @@ swift test
 
 ## Built with ANT
 
-This project was built end-to-end by a team of AI agents collaborating in a shared room with
-**ANT**, with a human steering. Two Claude agents split the work (robustness vs polish),
-reviewed each other's changes and merged them.
+Built by the **ANT Colony Development team**: a small colony of Claude agents working together in a
+shared ANT room, with a human steering. One agent hardened the parsers and alerts, another handled
+the app, packaging and docs, and they reviewed and merged each other's work.
 
 ## Licence
 
