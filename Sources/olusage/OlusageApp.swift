@@ -4,16 +4,34 @@ import OlusageCore
 
 @main
 struct OlusageApp: App {
-    @State private var store = UsageStore()
+    @State private var store = UsageStore(source: KeyStore.load().map { APIKeySource(apiKey: $0) })
     @State private var login: LoginWindowController?
 
     var body: some Scene {
         MenuBarExtra {
-            MenuContent(store: store, openLogin: openLogin)
+            MenuContent(store: store, openLogin: openLogin, promptForKey: promptForKey)
         } label: {
             Text("🦙 \(store.menuBarTitle)")
         }
         .menuBarExtraStyle(.menu)
+    }
+
+    /// Asks for an Ollama API key, stores it in the Keychain and switches to the API source.
+    private func promptForKey() {
+        let field = NSSecureTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
+        field.placeholderString = "Ollama API key"
+        let alert = NSAlert()
+        alert.messageText = "Use an Ollama API key"
+        alert.informativeText = "Create one at ollama.com/settings/keys. It is stored in your Keychain. The API shows usage but not reset times."
+        alert.accessoryView = field
+        alert.addButton(withTitle: "Use key")
+        alert.addButton(withTitle: "Cancel")
+        NSApp.activate()
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        let key = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !key.isEmpty else { return }
+        KeyStore.save(key)
+        store.use(source: APIKeySource(apiKey: key))
     }
 
     private func openLogin() {
@@ -26,6 +44,7 @@ struct OlusageApp: App {
 struct MenuContent: View {
     let store: UsageStore
     let openLogin: () -> Void
+    let promptForKey: () -> Void
 
     var body: some View {
         switch store.status {
@@ -56,6 +75,11 @@ struct MenuContent: View {
             get: { SMAppService.mainApp.status == .enabled },
             set: { on in try? (on ? SMAppService.mainApp.register() : SMAppService.mainApp.unregister()) }
         ))
+        if KeyStore.load() == nil {
+            Button("Use API key…", action: promptForKey)
+        } else {
+            Button("Back to sign-in mode") { KeyStore.delete(); store.use(source: ScrapeSource()) }
+        }
         if store.status != .signedOut {
             Button("Sign out") { Task { await store.signOut() } }
         }

@@ -20,7 +20,7 @@ final class UsageStore {
         didSet { UserDefaults.standard.set(intervalMinutes, forKey: "intervalMinutes"); restartTimer() }
     }
 
-    private let source: UsageSource
+    private var source: UsageSource
     private var timer: Timer?
 
     init(source: UsageSource? = nil) {
@@ -43,6 +43,14 @@ final class UsageStore {
         } catch {
             status = .error("\(error)")
         }
+    }
+
+    /// Swaps where usage comes from (scrape <-> API key) and refreshes straight away.
+    func use(source: UsageSource) {
+        self.source = source
+        usage = nil
+        status = .idle
+        Task { await refresh() }
     }
 
     func signOut() async {
