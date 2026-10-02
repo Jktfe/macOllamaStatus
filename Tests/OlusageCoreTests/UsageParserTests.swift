@@ -50,3 +50,24 @@ final class UsageParserTests: XCTestCase {
         }
     }
 }
+
+final class APIUsageParserTests: XCTestCase {
+    func testParsesSessionAndWeekly() throws {
+        let json = #"{"activity":{"cost":"0"},"limits":{"session":{"usage":0,"models":[]},"weekly":{"usage":12.5,"models":[{"name":"m","request_count":3}]}}}"#
+        let usage = try APIUsageParser.parse(data: Data(json.utf8), percentScale: 1)
+        XCTAssertEqual(usage.meters, [
+            UsageMeter(label: "Session usage", percent: 0, resetText: nil),
+            UsageMeter(label: "Weekly usage", percent: 12.5, resetText: nil),
+        ])
+    }
+
+    func testScaleConvertsFraction() throws {
+        let json = #"{"limits":{"weekly":{"usage":0.25}}}"#
+        XCTAssertEqual(try APIUsageParser.parse(data: Data(json.utf8), percentScale: 100).meters.first?.percent, 25)
+    }
+
+    func testRejectsUnexpectedJSON() {
+        XCTAssertThrowsError(try APIUsageParser.parse(data: Data("{}".utf8)))
+        XCTAssertThrowsError(try APIUsageParser.parse(data: Data("nope".utf8)))
+    }
+}

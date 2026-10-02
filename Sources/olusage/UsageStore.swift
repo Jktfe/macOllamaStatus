@@ -20,20 +20,23 @@ final class UsageStore {
         didSet { UserDefaults.standard.set(intervalMinutes, forKey: "intervalMinutes"); restartTimer() }
     }
 
-    private let fetcher = SettingsFetcher()
+    private let source: UsageSource
     private var timer: Timer?
 
-    init() { restartTimer(); Task { await refresh() } }
+    init(source: UsageSource? = nil) {
+        self.source = source ?? ScrapeSource()
+        restartTimer()
+        Task { await refresh() }
+    }
 
     func refresh() async {
         guard status != .loading else { return }
         status = .loading
         do {
-            let text = try await fetcher.fetchText()
-            usage = try UsageParser.parse(text: text)
+            usage = try await source.fetchUsage()
             lastUpdated = Date()
             status = .ok
-        } catch SettingsFetcher.FetchError.signedOut, ParseError.signedOut {
+        } catch ParseError.signedOut {
             status = .signedOut
         } catch ParseError.noUsageFound {
             status = .error("Couldn't find usage on the settings page")
