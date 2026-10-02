@@ -27,6 +27,23 @@ final class UsageParserTests: XCTestCase {
         }
     }
 
+    func testIgnoresPercentagesInProse() throws {
+        let text = "Session usage 10% used\nResets in 1 hour\nSave 20% on annual plans"
+        let usage = try UsageParser.parse(text: text)
+        XCTAssertEqual(usage.meters.map(\.label), ["Session usage"])
+    }
+
+    func testPercentWithSpaceAndDecimal() throws {
+        let usage = try UsageParser.parse(text: "Weekly usage: 33.5 % used")
+        XCTAssertEqual(usage.meters.first?.percent, 33.5)
+        XCTAssertEqual(usage.meters.first?.label, "Weekly usage")
+    }
+
+    func testHeadlineIsHighestPercent() throws {
+        let usage = try UsageParser.parse(text: "A 5% used\nB 90% used\nC 40% used")
+        XCTAssertEqual(usage.headline?.label, "B")
+    }
+
     func testNoUsageFound() {
         XCTAssertThrowsError(try UsageParser.parse(text: "Account\nSign out\nProfile")) {
             XCTAssertEqual($0 as? ParseError, .noUsageFound)

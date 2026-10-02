@@ -9,6 +9,9 @@ final class SettingsFetcher: NSObject, WKNavigationDelegate {
 
     enum FetchError: Error { case signedOut, failed(String) }
 
+    private static let pollInterval: TimeInterval = 0.5
+    private static let maxAttempts = 20   // ~10s
+
     private let webView: WKWebView
     private var continuation: CheckedContinuation<String, Error>?
 
@@ -34,11 +37,21 @@ final class SettingsFetcher: NSObject, WKNavigationDelegate {
             finish(.failure(FetchError.signedOut))   // bounced to the sign-in page
             return
         }
-        // Give client-side rendering a moment to populate the usage meters.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-            self?.webView.evaluateJavaScript("document.body.innerText") { result, error in
-                if let text = result as? String { self?.finish(.success(text)) }
-                else { self?.finish(.failure(FetchError.failed(error?.localizedDescription ?? "no text"))) }
+        // The meters render client-side, so poll until a percentage appears (or give up and let the
+        // parser report what it found).
+        readText(attempt: 0)
+    }
+
+    private func readText(attempt: Int) {
+        webView.evaluateJavaScript("document.body.innerText") { [weak self] result, error in
+            guard let self else { return }
+            if let text = result as? String {
+                if text.contains("%") || attempt >= Self.maxAttempts { self.finish(.success(text)); return }
+            } else if attempt >= Self.maxAttempts {
+                self.finish(.failure(FetchError.failed(error?.localizedDescription ?? "no text"))); return
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.pollInterval) { [weak self] in
+                self?.readText(attempt: attempt + 1)
             }
         }
     }

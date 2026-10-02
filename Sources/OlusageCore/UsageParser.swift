@@ -46,8 +46,12 @@ public enum UsageParser {
         var meters: [UsageMeter] = []
         for (i, line) in lines.enumerated() {
             guard let percent = firstPercent(in: line) else { continue }
-            let label = labelFor(line: line, previous: i > 0 ? lines[i - 1] : nil)
+            let previous = i > 0 ? lines[i - 1] : nil
             let reset = lines[(i + 1)...].prefix(2).first { $0.lowercased().hasPrefix("reset") }
+            // Skip percentages in unrelated prose ("Save 20% on annual plans").
+            let context = [previous, line].compactMap { $0 }.joined(separator: " ").lowercased()
+            guard reset != nil || context.contains("usage") || context.contains("used") else { continue }
+            let label = labelFor(line: line, previous: previous)
             meters.append(UsageMeter(label: label, percent: percent, resetText: reset))
         }
         guard !meters.isEmpty else { throw ParseError.noUsageFound }
