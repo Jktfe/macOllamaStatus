@@ -7,11 +7,14 @@ struct OlusageApp: App {
     @State private var store = UsageStore(source: KeyStore.load().map { APIKeySource(apiKey: $0) })
     @State private var login: LoginWindowController?
 
+    init() { Notifier.requestAuthorization() }
+
     var body: some Scene {
         MenuBarExtra {
             MenuContent(store: store, openLogin: openLogin, promptForKey: promptForKey)
         } label: {
-            Text("🦙 \(store.menuBarTitle)")
+            let high = (store.usage?.headline?.percent ?? 0) >= 90
+            Text("🦙 \(high ? "⚠︎ " : "")\(store.menuBarTitle)")
         }
         .menuBarExtraStyle(.menu)
     }
