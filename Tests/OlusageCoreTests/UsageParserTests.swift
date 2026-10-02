@@ -71,3 +71,10 @@ final class APIUsageParserTests: XCTestCase {
         XCTAssertThrowsError(try APIUsageParser.parse(data: Data("nope".utf8)))
     }
 }
+
+extension APIUsageParserTests {
+    func testDefaultScaleTreatsUsageAsFraction() throws {
+        let json = #"{"limits":{"weekly":{"usage":1}}}"#
+        XCTAssertEqual(try APIUsageParser.parse(data: Data(json.utf8)).meters.first?.percent, 100)
+    }
+}

@@ -5,9 +5,9 @@ import Foundation
 ///
 /// The response carries no reset times, so `resetText` is always nil.
 public enum APIUsageParser {
-    /// Multiplier from the API's `usage` number to a percentage. UNCONFIRMED: 1 means the API already
-    /// reports percent; 100 would mean it is a 0-1 fraction. Verify against ollama.com/settings.
-    public static let percentScale: Double = 1
+    /// Multiplier from the API's `usage` number (a 0-1 fraction, confirmed against ollama.com/settings:
+    /// API 1 == site 100%) to a percentage.
+    public static let percentScale: Double = 100
 
     public static func parse(data: Data, percentScale: Double = percentScale) throws -> Usage {
         guard let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
