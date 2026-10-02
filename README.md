@@ -20,7 +20,13 @@
 
 ## Install
 
-Requires macOS 14+ and the Swift toolchain (Xcode or Command Line Tools).
+**Homebrew:**
+
+```sh
+brew install --cask jktfe/tap/macollamastatus
+```
+
+**From source** (needs macOS 14+ and the Swift toolchain, Xcode or Command Line Tools):
 
 ```sh
 git clone https://github.com/Jktfe/macOllamaStatus.git
