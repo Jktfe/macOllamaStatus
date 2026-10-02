@@ -7,6 +7,8 @@
 🦙 42%          🦙 ⚠︎ 93%
 ```
 
+<p align="center"><img src="docs/menu.png" alt="The macOllamaStatus menu showing session and weekly usage" width="320"></p>
+
 - Menu bar percentage for your most-used meter (session / weekly), with every meter in the menu.
 - Notifications at **75%, 90% and 100%**, once per crossing, and quiet when you launch it.
 - Warning mark in the menu bar from 90%.

@@ -81,7 +81,7 @@ struct MenuContent: View {
         } else {
             Button("Back to sign-in mode") { KeyStore.delete(); store.use(source: ScrapeSource()) }
         }
-        if store.status != .signedOut {
+        if store.status != .signedOut && KeyStore.load() == nil {
             Button("Sign out") { Task { await store.signOut() } }
         }
         Divider()
