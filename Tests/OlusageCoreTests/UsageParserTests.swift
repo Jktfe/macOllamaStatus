@@ -78,3 +78,21 @@ extension APIUsageParserTests {
         XCTAssertEqual(try APIUsageParser.parse(data: Data(json.utf8)).meters.first?.percent, 100)
     }
 }
+
+final class FillingResetsTests: XCTestCase {
+    func testTakesResetsButKeepsAPIPercent() {
+        let api = Usage(meters: [UsageMeter(label: "Session usage", percent: 40, resetText: nil),
+                                 UsageMeter(label: "Weekly usage", percent: 100, resetText: nil)])
+        let page = Usage(meters: [UsageMeter(label: "Weekly limit", percent: 99, resetText: "Resets in 2 days"),
+                                  UsageMeter(label: "Session limit", percent: 38, resetText: "Resets in 3 hours")])
+        let merged = api.fillingResets(from: page)
+        XCTAssertEqual(merged.meters.map(\.percent), [40, 100])
+        XCTAssertEqual(merged.meters.map(\.resetText), ["Resets in 3 hours", "Resets in 2 days"])
+    }
+
+    func testLeavesUnmatchedAlone() {
+        let api = Usage(meters: [UsageMeter(label: "Other", percent: 1, resetText: nil)])
+        let page = Usage(meters: [UsageMeter(label: "Session", percent: 1, resetText: "Resets soon")])
+        XCTAssertEqual(api.fillingResets(from: page), api)
+    }
+}

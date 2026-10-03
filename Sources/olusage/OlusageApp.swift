@@ -4,7 +4,7 @@ import OlusageCore
 
 @main
 struct OlusageApp: App {
-    @State private var store = UsageStore(source: KeyStore.load().map { APIKeySource(apiKey: $0) })
+    @State private var store = UsageStore(source: KeyStore.load().map { HybridSource(apiKey: $0) })
     @State private var login: LoginWindowController?
 
     var body: some Scene {
@@ -26,7 +26,7 @@ struct OlusageApp: App {
         field.placeholderString = "Ollama API key"
         let alert = NSAlert()
         alert.messageText = "Use an Ollama API key"
-        alert.informativeText = "Create one at ollama.com/settings/keys. It is stored in your Keychain. The API shows usage but not reset times."
+        alert.informativeText = "Create one at ollama.com/settings/keys. It is stored in your Keychain. Reset times need a sign-in too (menu: Sign in for reset times)."
         alert.accessoryView = field
         alert.addButton(withTitle: "Use key")
         alert.addButton(withTitle: "Cancel")
@@ -35,7 +35,7 @@ struct OlusageApp: App {
         let key = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !key.isEmpty else { return }
         KeyStore.save(key)
-        store.use(source: APIKeySource(apiKey: key))
+        store.use(source: HybridSource(apiKey: key))
     }
 
     private func openLogin() {
@@ -82,6 +82,7 @@ struct MenuContent: View {
         if KeyStore.load() == nil {
             Button("Use API key…", action: promptForKey)
         } else {
+            Button("Sign in for reset times…", action: openLogin)
             Button("Back to sign-in mode") { KeyStore.delete(); store.use(source: ScrapeSource()) }
         }
         if store.status != .signedOut && KeyStore.load() == nil {

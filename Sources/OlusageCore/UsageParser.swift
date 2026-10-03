@@ -73,3 +73,24 @@ public enum UsageParser {
         return previous ?? "Usage"
     }
 }
+
+extension Usage {
+    /// Fills in missing reset text from `other` (typically the scraped settings page), matching meters by
+    /// window: anything mentioning "session" pairs with "session", "week"/"weekly" with "week". Percentages
+    /// are never taken from `other`, so a stale scrape can't override fresher API numbers.
+    public func fillingResets(from other: Usage) -> Usage {
+        func window(_ label: String) -> String? {
+            let l = label.lowercased()
+            if l.contains("session") { return "session" }
+            if l.contains("week") { return "week" }
+            return nil
+        }
+        let resets = other.meters.reduce(into: [String: String]()) { dict, m in
+            if let w = window(m.label), let r = m.resetText { dict[w] = dict[w] ?? r }
+        }
+        return Usage(meters: meters.map { m in
+            guard m.resetText == nil, let w = window(m.label), let r = resets[w] else { return m }
+            return UsageMeter(label: m.label, percent: m.percent, resetText: r)
+        })
+    }
+}
