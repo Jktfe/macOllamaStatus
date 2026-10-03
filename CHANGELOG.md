@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- API-key mode can show reset times by also reading your signed-in settings page (best effort).
+
 ## 0.1.0
 
 First public release.

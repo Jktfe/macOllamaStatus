@@ -46,7 +46,9 @@ window closes itself when you reach your settings page. Shows percentages **and 
 
 **API key (optional).** Click the llama in the menu bar → **Use API key…**, paste a key from
 [ollama.com/settings/keys](https://ollama.com/settings/keys). Sturdier than reading the page, but
-the API gives percentages only, with no reset times. **Back to sign-in mode** removes the key.
+the API itself has no reset times, so the menu offers **Sign in for reset times…**: sign in once and
+the reset text is read from your settings page and shown next to the API percentages (best effort:
+if the page can't be read, resets are simply left blank). **Back to sign-in mode** removes the key.
 
 Usage refreshes every 5 minutes (change it in the menu).
 
