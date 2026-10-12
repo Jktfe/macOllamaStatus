@@ -19,6 +19,15 @@ public struct Usage: Equatable, Sendable {
 
     /// The most-used meter, shown in the menu bar title.
     public var headline: UsageMeter? { meters.max { $0.percent < $1.percent } }
+
+    /// The session and weekly meters (matched by label), for the two-line menu bar display.
+    /// Nil unless both are present.
+    public var sessionAndWeekly: (session: UsageMeter, weekly: UsageMeter)? {
+        guard let session = meters.first(where: { $0.label.lowercased().contains("session") }),
+              let weekly = meters.first(where: { $0.label.lowercased().contains("week") })
+        else { return nil }
+        return (session, weekly)
+    }
 }
 
 public enum ParseError: Error, Equatable {

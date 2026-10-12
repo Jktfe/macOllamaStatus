@@ -14,7 +14,13 @@ struct OlusageApp: App {
             let high = (store.usage?.headline?.percent ?? 0) >= 90
             HStack(spacing: 3) {
                 Image(nsImage: MenuBarIcon.llama)
-                Text("\(high ? "⚠︎ " : "")\(store.menuBarTitle)")
+                if let both = store.usage?.sessionAndWeekly, store.status == .ok || store.status == .loading {
+                    if high { Text("⚠︎") }
+                    Image(nsImage: StackedPercentImage.make(top: Int(both.session.percent.rounded()),
+                                                            bottom: Int(both.weekly.percent.rounded())))
+                } else {
+                    Text("\(high ? "⚠︎ " : "")\(store.menuBarTitle)")
+                }
             }
         }
         .menuBarExtraStyle(.menu)

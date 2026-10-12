@@ -96,3 +96,17 @@ final class FillingResetsTests: XCTestCase {
         XCTAssertEqual(api.fillingResets(from: page), api)
     }
 }
+
+final class SessionAndWeeklyTests: XCTestCase {
+    func testPicksSessionAndWeeklyByLabel() {
+        let usage = Usage(meters: [UsageMeter(label: "Weekly usage", percent: 80, resetText: nil),
+                                   UsageMeter(label: "Session usage", percent: 10, resetText: nil)])
+        XCTAssertEqual(usage.sessionAndWeekly?.session.percent, 10)
+        XCTAssertEqual(usage.sessionAndWeekly?.weekly.percent, 80)
+    }
+
+    func testNilWhenEitherMissing() {
+        XCTAssertNil(Usage(meters: [UsageMeter(label: "Session usage", percent: 10, resetText: nil)]).sessionAndWeekly)
+        XCTAssertNil(Usage(meters: [UsageMeter(label: "Plan", percent: 10, resetText: nil)]).sessionAndWeekly)
+    }
+}

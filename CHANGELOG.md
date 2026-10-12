@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Menu bar shows session % (top) and weekly % (bottom) stacked, when both meters are available.
 - API-key mode can show reset times by also reading your signed-in settings page (best effort).
 
 ## 0.1.0
