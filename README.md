@@ -3,13 +3,9 @@
 **Know before you run out.** A tiny macOS menu bar app that shows your live
 [Ollama Cloud](https://ollama.com) usage and warns you *before* you hit the limit.
 
-```
-🦙 42%          🦙 ⚠︎ 93%
-```
-
 <p align="center"><img src="docs/menu.png" alt="The macOllamaStatus menu showing session and weekly usage" width="320"></p>
 
-- Menu bar percentage for your most-used meter (session / weekly), with every meter in the menu.
+- Menu bar shows your **session %** over your **weekly %**, with reset times in the menu.
 - Notifications at **75%, 90% and 100%**, once per crossing, and quiet when you launch it.
 - Warning mark in the menu bar from 90%.
 - Two ways in: sign in on ollama.com, or paste an API key (optional).
