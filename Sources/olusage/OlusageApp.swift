@@ -12,13 +12,14 @@ struct OlusageApp: App {
             MenuContent(store: store, openLogin: openLogin, promptForKey: promptForKey)
         } label: {
             let high = (store.usage?.headline?.percent ?? 0) >= 90
-            HStack(spacing: 3) {
-                Image(nsImage: MenuBarIcon.llama)
-                if let both = store.usage?.sessionAndWeekly, store.status == .ok || store.status == .loading {
-                    if high { Text("⚠︎") }
-                    Image(nsImage: StackedPercentImage.make(top: Int(both.session.percent.rounded()),
-                                                            bottom: Int(both.weekly.percent.rounded())))
-                } else {
+            if let both = store.usage?.sessionAndWeekly, store.status == .ok || store.status == .loading {
+                Image(nsImage: StackedPercentImage.make(llama: MenuBarIcon.llama,
+                                                        top: Int(both.session.percent.rounded()),
+                                                        bottom: Int(both.weekly.percent.rounded()),
+                                                        warn: high))
+            } else {
+                HStack(spacing: 3) {
+                    Image(nsImage: MenuBarIcon.llama)
                     Text("\(high ? "⚠︎ " : "")\(store.menuBarTitle)")
                 }
             }
