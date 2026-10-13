@@ -57,6 +57,7 @@ public enum UsageParser {
             guard let percent = firstPercent(in: line) else { continue }
             let previous = i > 0 ? lines[i - 1] : nil
             let reset = lines[(i + 1)...].prefix(2).first { $0.lowercased().hasPrefix("reset") }
+                .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) }
             // Skip percentages in unrelated prose ("Save 20% on annual plans").
             let context = [previous, line].compactMap { $0 }.joined(separator: " ").lowercased()
             guard reset != nil || context.contains("usage") || context.contains("used") else { continue }

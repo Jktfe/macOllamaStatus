@@ -44,6 +44,11 @@ final class UsageParserTests: XCTestCase {
         XCTAssertEqual(usage.headline?.label, "B")
     }
 
+    func testTrimsTrailingFullStopFromReset() throws {
+        let usage = try UsageParser.parse(text: "Session usage 1% used\nResets in 4 hours.")
+        XCTAssertEqual(usage.meters.first?.resetText, "Resets in 4 hours")
+    }
+
     func testNoUsageFound() {
         XCTAssertThrowsError(try UsageParser.parse(text: "Account\nSign out\nProfile")) {
             XCTAssertEqual($0 as? ParseError, .noUsageFound)
